@@ -25,6 +25,15 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
+    @ExceptionHandler(UserDuplicateException.class)
+    public ResponseEntity<Object> userDuplicateException(
+            UserNotFoundException ex, HttpServletRequest request) {
+
+        var body = createBody(ex, request, HttpStatus.CONFLICT);
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> generalException(
             Exception ex, HttpServletRequest request) {
