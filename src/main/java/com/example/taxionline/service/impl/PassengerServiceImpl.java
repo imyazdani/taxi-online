@@ -1,6 +1,7 @@
 package com.example.taxionline.service.impl;
 
 import com.example.taxionline.exception.UserDuplicateException;
+import com.example.taxionline.exception.UserNotFoundException;
 import com.example.taxionline.model.dto.PassengerDto;
 import com.example.taxionline.model.entity.PassengerEntity;
 import com.example.taxionline.model.enums.UserRoleEnum;
@@ -32,6 +33,10 @@ public class PassengerServiceImpl implements PassengerService {
 
     @Override
     public PassengerDto getPassenger(String username) {
-        return null;
+        PassengerEntity passengerEntity = passengerRepository.findByUsername(username).orElseThrow(() -> {
+            throw new UserNotFoundException(username);
+        });
+
+        return modelMapper.map(passengerEntity, PassengerDto.class);
     }
 }

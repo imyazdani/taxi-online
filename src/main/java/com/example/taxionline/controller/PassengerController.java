@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/passengers")
@@ -27,5 +24,12 @@ public class PassengerController {
         PassengerDto passengerResult = passengerService.register(passengerDto);
 
         return new ResponseEntity<>(modelMapper.map(passengerResult, PassengerRegisterRs.class), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<PassengerRegisterRs> getPassenger(@PathVariable String username){
+        PassengerDto passengerResult = passengerService.getPassenger(username);
+
+        return new ResponseEntity<>(modelMapper.map(passengerResult, PassengerRegisterRs.class), HttpStatus.OK);
     }
 }

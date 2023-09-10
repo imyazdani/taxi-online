@@ -18,7 +18,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUser(String username) {
         UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(() -> {
-            throw new UserNotFoundException("no value present in Optional object");
+            throw new UserNotFoundException(username);
         });
 
         return modelMapper.map(userEntity, UserDto.class);
