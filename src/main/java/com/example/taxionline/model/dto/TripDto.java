@@ -1,14 +1,16 @@
 package com.example.taxionline.model.dto;
 
-import com.example.taxionline.model.entity.DriverEntity;
-import com.example.taxionline.model.entity.PassengerEntity;
 import com.example.taxionline.model.enums.TripStateEnum;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 public class TripDto {
     private Long id;
-    private PassengerEntity passengerEntity;
-    private DriverEntity driverEntity;
+    private PassengerDto passengerEntity;
+    private DriverDto driverEntity;
     private TripStateEnum tripState;
+    private GpsLocationDto gpsLocation;
+    private LocalDateTime tripTime;
 }

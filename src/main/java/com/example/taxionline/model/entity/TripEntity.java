@@ -5,6 +5,7 @@ import com.example.taxionline.model.enums.TripStateEnum;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "trip")
@@ -25,4 +26,12 @@ public class TripEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "tripState", nullable = false)
     private TripStateEnum tripState;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "gpsLocation_id", referencedColumnName = "id")
+    private GpsLocation gpsLocation;
+
+    @Column(name = "tripTime", nullable = false)
+    private LocalDateTime tripTime;
+
 }
