@@ -39,14 +39,15 @@ public class PassengerController {
         return new ResponseEntity<>(modelMapper.map(passengerResult, PassengerRegisterRs.class), HttpStatus.OK);
     }
 
-    @PostMapping("/{username}/trip")
-    public ResponseEntity<TripRequestRs> requestTrip(@PathVariable String username, @RequestBody TripRequestRq tripRequestRq){
+    @PostMapping("/{username}/trips")
+    public ResponseEntity<TripRequestRs> requestTrip(@PathVariable String username,
+                                                     @RequestBody TripRequestRq tripRequestRq){
         TripRequestDto tripRequestDto = new TripRequestDto();
         tripRequestDto.setUsername(username);
         tripRequestDto.setX(tripRequestRq.getX());
         tripRequestDto.setY(tripRequestRq.getY());
 
-        TripDto tripDto = tripService.request(tripRequestDto);
+        TripDto tripDto = tripService.submitRequestByPassenger(tripRequestDto);
 
         return new ResponseEntity<>(modelMapper.map(tripDto, TripRequestRs.class), HttpStatus.OK);
     }
