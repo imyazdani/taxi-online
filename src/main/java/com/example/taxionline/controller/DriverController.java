@@ -3,8 +3,10 @@ package com.example.taxionline.controller;
 import com.example.taxionline.model.dto.DriverDto;
 import com.example.taxionline.model.dto.TripRequestAvailableDto;
 import com.example.taxionline.model.dto.TripRequestDto;
+import com.example.taxionline.model.dto.TripStateDto;
 import com.example.taxionline.model.request.DriverRegisterRq;
 import com.example.taxionline.model.request.TripRequestRq;
+import com.example.taxionline.model.request.TripStateRq;
 import com.example.taxionline.model.response.DriverRegisterRs;
 import com.example.taxionline.model.response.TripRequestAvailableRs;
 import com.example.taxionline.service.DriverService;
@@ -27,7 +29,7 @@ public class DriverController {
     private final TripService tripService;
 
     @PostMapping
-    public ResponseEntity<DriverRegisterRs> register(@RequestBody DriverRegisterRq driverRq){
+    public ResponseEntity<DriverRegisterRs> register(@RequestBody DriverRegisterRq driverRq) {
         DriverDto driverDto = modelMapper.map(driverRq, DriverDto.class);
         DriverDto driverResult = driverService.register(driverDto);
 
@@ -35,7 +37,7 @@ public class DriverController {
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<DriverRegisterRs> getDriver(@PathVariable String username){
+    public ResponseEntity<DriverRegisterRs> getDriver(@PathVariable String username) {
         DriverDto driverResult = driverService.getDriver(username);
 
         return new ResponseEntity<>(modelMapper.map(driverResult, DriverRegisterRs.class), HttpStatus.OK);
@@ -43,15 +45,30 @@ public class DriverController {
 
     @PostMapping("/{username}/trips")
     public ResponseEntity<List<TripRequestAvailableRs>> getRequestedTrips(@PathVariable String username,
-                                                                          @RequestBody TripRequestRq tripRequestRq){
+                                                                          @RequestBody TripRequestRq tripRequestRq) {
         TripRequestDto tripRequestDto = new TripRequestDto();
         tripRequestDto.setUsername(username);
         tripRequestDto.setX(tripRequestRq.getX());
         tripRequestDto.setY(tripRequestRq.getY());
         List<TripRequestAvailableDto> tripDtoList = tripService.getRequestedTrips(tripRequestDto);
 
-        List<TripRequestAvailableRs> tripList = modelMapper.map(tripDtoList, new TypeToken<List<TripRequestAvailableRs>>(){}.getType());
+        List<TripRequestAvailableRs> tripList = modelMapper.map(tripDtoList, new TypeToken<List<TripRequestAvailableRs>>() {
+        }.getType());
 
         return new ResponseEntity<>(tripList, HttpStatus.OK);
     }
+
+    @PostMapping("/{username}/trips/{id}")
+    public ResponseEntity<Void> changeTripState(@PathVariable String username,
+                                                  @PathVariable Long id,
+                                                  @RequestBody TripStateRq tripStateRq) {
+        TripStateDto tripStateDto = new TripStateDto();
+        tripStateDto.setId(id);
+        tripStateDto.setUsername(username);
+        tripStateDto.setTripState(tripStateRq.getTripState());
+
+        tripService.changeTripState(tripStateDto);
+        return ResponseEntity.ok().build();
+    }
+
 }

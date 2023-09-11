@@ -1,7 +1,11 @@
 package com.example.taxionline.service.impl;
 
+import com.example.taxionline.exception.DriverException;
+import com.example.taxionline.exception.TripIsNotChangeableException;
+import com.example.taxionline.exception.TripNotFoundException;
 import com.example.taxionline.exception.UserNotFoundException;
 import com.example.taxionline.model.dto.*;
+import com.example.taxionline.model.entity.DriverEntity;
 import com.example.taxionline.model.entity.GpsLocationEntity;
 import com.example.taxionline.model.entity.PassengerEntity;
 import com.example.taxionline.model.entity.TripEntity;
@@ -18,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,6 +68,36 @@ public class TripServiceImpl implements TripService {
         List<TripDto> tripDtoList = listTripsByRequest(gpsLocationDto);
 
         return modelMapper.map(tripDtoList, new TypeToken<List<TripRequestAvailableDto>>(){}.getType());
+    }
+
+    @Transactional
+    @Override
+    public void changeTripState(TripStateDto tripStateDto){
+        TripEntity tripEntity = tripRepository.findById(tripStateDto.getId()).orElseThrow(() -> {
+            throw new TripNotFoundException(tripStateDto.getId());
+        });
+
+        if (tripEntity.getTripState() == TripStateEnum.FINISHED){
+            throw new TripIsNotChangeableException(tripStateDto.getId());
+        }
+
+        DriverDto driverDto = driverService.getDriver(tripStateDto.getUsername());
+        if (driverDto == null){
+            throw new UserNotFoundException(tripStateDto.getUsername());
+        }
+
+        TripEntity tripDriver = tripRepository
+                .findByDriverEntityAndTripState((modelMapper.map(driverDto, DriverEntity.class)),
+                        TripStateEnum.ACCEPT);
+        if (tripDriver != null && !Objects.equals(tripDriver.getId(), tripStateDto.getId())){
+            throw new DriverException("Driver has a trip.");
+        }
+
+        tripEntity.setTripState(tripStateDto.getTripState());
+        tripEntity.setDriverEntity((modelMapper.map(driverDto, DriverEntity.class)));
+
+        tripRepository.save(tripEntity);
+
     }
 
     private List<TripDto> listTripsByRequest(GpsLocationDto gpsLocationDto){
