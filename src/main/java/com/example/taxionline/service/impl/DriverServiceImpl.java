@@ -10,6 +10,7 @@ import com.example.taxionline.service.DriverService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class DriverServiceImpl implements DriverService {
     private final ModelMapper modelMapper;
     private final DriverRepository driverRepository;
 
+    @Transactional
     @Override
     public DriverDto register(DriverDto driverDto) {
         DriverEntity driverEntity = modelMapper.map(driverDto, DriverEntity.class);

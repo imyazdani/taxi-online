@@ -10,6 +10,7 @@ import com.example.taxionline.service.PassengerService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class PassengerServiceImpl implements PassengerService {
     private final ModelMapper modelMapper;
     private final PassengerRepository passengerRepository;
 
+    @Transactional
     @Override
     public PassengerDto register(PassengerDto customerDto) {
         PassengerEntity passengerEntity = modelMapper.map(customerDto, PassengerEntity.class);

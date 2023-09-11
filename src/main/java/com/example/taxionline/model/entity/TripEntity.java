@@ -29,7 +29,7 @@ public class TripEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "gpsLocation_id", referencedColumnName = "id")
-    private GpsLocation gpsLocation;
+    private GpsLocationEntity gpsLocation;
 
     @Column(name = "tripTime", nullable = false)
     private LocalDateTime tripTime;

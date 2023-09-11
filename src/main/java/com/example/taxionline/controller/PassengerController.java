@@ -1,9 +1,14 @@
 package com.example.taxionline.controller;
 
 import com.example.taxionline.model.dto.PassengerDto;
+import com.example.taxionline.model.dto.TripDto;
+import com.example.taxionline.model.dto.TripRequestDto;
 import com.example.taxionline.model.request.PassengerRegisterRq;
+import com.example.taxionline.model.request.TripRequestRq;
 import com.example.taxionline.model.response.PassengerRegisterRs;
+import com.example.taxionline.model.response.TripRequestRs;
 import com.example.taxionline.service.PassengerService;
+import com.example.taxionline.service.TripService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -17,6 +22,7 @@ public class PassengerController {
 
     private final ModelMapper modelMapper;
     private final PassengerService passengerService;
+    private final TripService tripService;
 
     @PostMapping
     public ResponseEntity<PassengerRegisterRs> register(@RequestBody PassengerRegisterRq passengerRq){
@@ -31,5 +37,17 @@ public class PassengerController {
         PassengerDto passengerResult = passengerService.getPassenger(username);
 
         return new ResponseEntity<>(modelMapper.map(passengerResult, PassengerRegisterRs.class), HttpStatus.OK);
+    }
+
+    @PostMapping("/{username}/trip")
+    public ResponseEntity<TripRequestRs> requestTrip(@PathVariable String username, @RequestBody TripRequestRq tripRequestRq){
+        TripRequestDto tripRequestDto = new TripRequestDto();
+        tripRequestDto.setUsername(username);
+        tripRequestDto.setX(tripRequestRq.getX());
+        tripRequestDto.setY(tripRequestRq.getY());
+
+        TripDto tripDto = tripService.request(tripRequestDto);
+
+        return new ResponseEntity<>(modelMapper.map(tripDto, TripRequestRs.class), HttpStatus.OK);
     }
 }
