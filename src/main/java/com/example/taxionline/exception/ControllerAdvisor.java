@@ -27,11 +27,38 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UserDuplicateException.class)
     public ResponseEntity<Object> userDuplicateException(
-            UserNotFoundException ex, HttpServletRequest request) {
+            UserDuplicateException ex, HttpServletRequest request) {
 
         var body = createBody(ex, request, HttpStatus.CONFLICT);
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    }
+
+    @ExceptionHandler(TripNotFoundException.class)
+    public ResponseEntity<Object> tripNotFoundException(
+            TripNotFoundException ex, HttpServletRequest request) {
+
+        var body = createBody(ex, request, HttpStatus.NOT_FOUND);
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(TripIsNotChangeableException.class)
+    public ResponseEntity<Object> tripIsNotChangeableException(
+            TripIsNotChangeableException ex, HttpServletRequest request) {
+
+        var body = createBody(ex, request, HttpStatus.BAD_REQUEST);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(DriverException.class)
+    public ResponseEntity<Object> DriverException(
+            DriverException ex, HttpServletRequest request) {
+
+        var body = createBody(ex, request, HttpStatus.BAD_REQUEST);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
     @ExceptionHandler(Exception.class)
