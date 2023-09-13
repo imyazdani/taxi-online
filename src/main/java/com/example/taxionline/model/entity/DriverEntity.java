@@ -12,6 +12,7 @@ import java.util.Set;
 @Getter
 @Setter
 public class DriverEntity extends UserEntity{
+    @Column(name = "car", nullable = false)
     private String car;
 
     @OneToMany(mappedBy = "driverEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
