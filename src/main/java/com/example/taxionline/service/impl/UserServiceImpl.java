@@ -7,6 +7,7 @@ import com.example.taxionline.repository.UserRepository;
 import com.example.taxionline.security.SecurityConfig;
 import com.example.taxionline.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
@@ -36,6 +38,7 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException(username);
         });
 
+        log.info("User {} gets information from DB.", username);
         return modelMapper.map(userEntity, UserDto.class);
     }
 

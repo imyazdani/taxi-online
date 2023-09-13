@@ -8,12 +8,14 @@ import com.example.taxionline.model.enums.UserRoleEnum;
 import com.example.taxionline.repository.PassengerRepository;
 import com.example.taxionline.service.PassengerService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PassengerServiceImpl implements PassengerService {
 
@@ -24,16 +26,17 @@ public class PassengerServiceImpl implements PassengerService {
 
     @Transactional
     @Override
-    public PassengerDto register(PassengerDto customerDto) {
-        PassengerEntity passengerEntity = modelMapper.map(customerDto, PassengerEntity.class);
+    public PassengerDto register(PassengerDto passengerDto) {
+        PassengerEntity passengerEntity = modelMapper.map(passengerDto, PassengerEntity.class);
         passengerRepository.findByUsername(passengerEntity.getUsername()).ifPresent(passenger -> {
             throw new UserDuplicateException(passenger.getUsername());
         });
 
         passengerEntity.setRole(UserRoleEnum.PASSENGER);
-        passengerEntity.setPassword(passwordEncoder.encode(customerDto.getPassword()));
+        passengerEntity.setPassword(passwordEncoder.encode(passengerDto.getPassword()));
 
         PassengerEntity passengerStored = passengerRepository.save(passengerEntity);
+        log.info("Passenger {} is saved successfully.", passengerDto.getUsername());
         return modelMapper.map(passengerStored, PassengerDto.class);
     }
 
@@ -43,6 +46,7 @@ public class PassengerServiceImpl implements PassengerService {
             throw new UserNotFoundException(username);
         });
 
+        log.info("Passenger {} gets information from DB.", username);
         return modelMapper.map(passengerEntity, PassengerDto.class);
     }
 }

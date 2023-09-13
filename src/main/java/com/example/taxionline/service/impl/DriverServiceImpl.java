@@ -8,12 +8,14 @@ import com.example.taxionline.model.enums.UserRoleEnum;
 import com.example.taxionline.repository.DriverRepository;
 import com.example.taxionline.service.DriverService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class DriverServiceImpl implements DriverService {
 
@@ -33,6 +35,7 @@ public class DriverServiceImpl implements DriverService {
         driverEntity.setPassword(passwordEncoder.encode(driverDto.getPassword()));
 
         DriverEntity driverStored = driverRepository.save(driverEntity);
+        log.info("Driver {} is saved successfully.", driverDto.getUsername());
         return modelMapper.map(driverStored, DriverDto.class);
     }
 
@@ -42,6 +45,7 @@ public class DriverServiceImpl implements DriverService {
             throw new UserNotFoundException(username);
         });
 
+        log.info("Driver {} gets information from DB.", username);
         return modelMapper.map(driverEntity, DriverDto.class);
     }
 }

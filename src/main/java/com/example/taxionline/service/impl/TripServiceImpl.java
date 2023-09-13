@@ -16,6 +16,7 @@ import com.example.taxionline.service.DriverService;
 import com.example.taxionline.service.PassengerService;
 import com.example.taxionline.service.TripService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class TripServiceImpl implements TripService {
     private final ModelMapper modelMapper;
@@ -54,6 +56,7 @@ public class TripServiceImpl implements TripService {
         tripEntity.setTripState(TripStateEnum.REQUEST);
 
         TripEntity tripStored = tripRepository.save(tripEntity);
+        log.info("Trip is registered successfully for user {}", tripRequestDto.getUsername());
         return modelMapper.map(tripStored, TripDto.class);
     }
 
@@ -69,6 +72,7 @@ public class TripServiceImpl implements TripService {
         gpsLocationDto.setY(tripRequestDto.getY());
         List<TripDto> tripDtoList = listTripsByRequest(gpsLocationDto);
 
+        log.info("Get all trips is available for user {}", tripRequestDto.getUsername());
         return modelMapper.map(tripDtoList, new TypeToken<List<TripRequestAvailableDto>>(){}.getType());
     }
 
@@ -99,7 +103,10 @@ public class TripServiceImpl implements TripService {
         tripEntity.setDriverEntity((modelMapper.map(driverDto, DriverEntity.class)));
 
         tripRepository.save(tripEntity);
-
+        log.info("Trip state {} is changed by driver {} to state {}",
+                tripStateDto.getId(),
+                tripStateDto.getUsername(),
+                tripStateDto.getTripState());
     }
 
     private List<TripDto> listTripsByRequest(GpsLocationDto gpsLocationDto){
