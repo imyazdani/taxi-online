@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+  app:
+    depends_on:
+      - mysqldb
+    build:
+      context: app
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/taxi_online?useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - taxionline-net
+
+  mysqldb:
+    image: "mysql:8.0"
+    ports:
+      - "3306:3306"
+    networks:
+      - taxionline-net
+    environment:
+      MYSQL_DATABASE: taxi_online
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db_data:/var/lib/mysql
+
+networks:
+  taxionline-net:
+    driver: bridge
+volumes:
+  db_data:
+    driver: local
