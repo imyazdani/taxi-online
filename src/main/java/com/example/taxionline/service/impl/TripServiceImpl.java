@@ -1,5 +1,6 @@
 package com.example.taxionline.service.impl;
 
+import com.example.taxionline.config.AppPropertiesConfig;
 import com.example.taxionline.exception.DriverException;
 import com.example.taxionline.exception.TripIsNotChangeableException;
 import com.example.taxionline.exception.TripNotFoundException;
@@ -32,6 +33,7 @@ public class TripServiceImpl implements TripService {
     private final TripRepository tripRepository;
     private final PassengerService passengerService;
     private final DriverService driverService;
+    private final AppPropertiesConfig appPropertiesConfig;
 
     @Transactional
     @Override
@@ -104,8 +106,12 @@ public class TripServiceImpl implements TripService {
         List<TripEntity> tripEntityList = tripRepository.findByTripState(TripStateEnum.REQUEST);
 
         List<TripEntity> collectedTrip = tripEntityList.parallelStream()
-                .filter(t -> (Math.abs(((t.getGpsLocation().getX()-gpsLocationDto.getX()) + (t.getGpsLocation().getY()- gpsLocationDto.getY())))) <= 10)
-                .limit(3)
+                .filter(t -> (
+                        Math.abs(((
+                                t.getGpsLocation().getX()-gpsLocationDto.getX())
+                                + (t.getGpsLocation().getY()- gpsLocationDto.getY()))))
+                                    <= appPropertiesConfig.getTrip().getDistance())
+                .limit(appPropertiesConfig.getTrip().getLimit())
                 .collect(Collectors.toList());
 
         return modelMapper.map(collectedTrip, new TypeToken<List<TripDto>>(){}.getType());
