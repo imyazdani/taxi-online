@@ -1,6 +1,7 @@
 package com.example.taxionline.service.impl;
 
 import com.example.taxionline.config.AppPropertiesConfig;
+import com.example.taxionline.exception.DriverException;
 import com.example.taxionline.exception.TripIsNotChangeableException;
 import com.example.taxionline.exception.TripNotFoundException;
 import com.example.taxionline.exception.UserNotFoundException;
@@ -173,6 +174,33 @@ public class TripServiceImplTest {
 
         Mockito.when(tripRepository.findById(anyLong())).thenReturn(Optional.of(tripEntity));
         Assertions.assertThrows(TripIsNotChangeableException.class, () -> tripService.changeTripState(tripStateDto));
+    }
+
+    @Test
+    void testChangeTripState_UserNotFound() {
+        TripStateDto tripStateDto = new TripStateDto();
+        tripStateDto.setId(1L);
+        tripStateDto.setUsername("mohsen");
+        tripStateDto.setTripState(TripStateEnum.REQUEST);
+
+        Mockito.when(tripRepository.findById(anyLong())).thenReturn(Optional.of(tripEntity));
+        Mockito.when(driverService.getDriver(anyString())).thenReturn(null);
+
+        Assertions.assertThrows(UserNotFoundException.class, () -> tripService.changeTripState(tripStateDto));
+    }
+
+    @Test
+    void testChangeTripState_DriverException() {
+        TripStateDto tripStateDto = new TripStateDto();
+        tripStateDto.setId(2L);
+        tripStateDto.setUsername("mohsen");
+        tripStateDto.setTripState(TripStateEnum.REQUEST);
+
+        Mockito.when(tripRepository.findById(anyLong())).thenReturn(Optional.of(tripEntity));
+        Mockito.when(driverService.getDriver(anyString())).thenReturn(driverDto);
+        Mockito.when(tripRepository.findByDriverEntityAndTripState(any(), any())).thenReturn(tripEntity);
+
+        Assertions.assertThrows(DriverException.class, () -> tripService.changeTripState(tripStateDto));
     }
 
 }
