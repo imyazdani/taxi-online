@@ -29,6 +29,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .antMatchers(HttpMethod.POST, appPropertiesConfig.getSecurity().getPassengerRegister()).permitAll()
                 .antMatchers(HttpMethod.POST, appPropertiesConfig.getSecurity().getDriverRegister()).permitAll()
+                .antMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic(Customizer.withDefaults());;
