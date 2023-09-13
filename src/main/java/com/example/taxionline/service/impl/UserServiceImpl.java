@@ -4,6 +4,7 @@ import com.example.taxionline.exception.UserNotFoundException;
 import com.example.taxionline.model.dto.UserDto;
 import com.example.taxionline.model.entity.UserEntity;
 import com.example.taxionline.repository.UserRepository;
+import com.example.taxionline.security.SecurityConfig;
 import com.example.taxionline.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -56,7 +57,8 @@ public class UserServiceImpl implements UserService {
         try {
             UserDto userDto = getUser(username);
             List<GrantedAuthority> grantedAuthorityList = new ArrayList<>();
-            grantedAuthorityList.add(new SimpleGrantedAuthority(userDto.getRole().toString()));
+            grantedAuthorityList.add(
+                    new SimpleGrantedAuthority(SecurityConfig.rolePrefix + userDto.getRole().toString()));
 
             return new User(userDto.getUsername(), userDto.getPassword(),
                     true, true, true,
@@ -65,6 +67,5 @@ public class UserServiceImpl implements UserService {
         } catch (UserNotFoundException e) {
             throw new UsernameNotFoundException(String.format("Username with name %s not found.", username));
         }
-
     }
 }
