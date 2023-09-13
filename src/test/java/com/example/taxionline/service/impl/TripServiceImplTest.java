@@ -1,6 +1,8 @@
 package com.example.taxionline.service.impl;
 
 import com.example.taxionline.config.AppPropertiesConfig;
+import com.example.taxionline.exception.TripIsNotChangeableException;
+import com.example.taxionline.exception.TripNotFoundException;
 import com.example.taxionline.exception.UserNotFoundException;
 import com.example.taxionline.model.dto.*;
 import com.example.taxionline.model.entity.GpsLocationEntity;
@@ -23,10 +25,10 @@ import org.modelmapper.ModelMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TripServiceImplTest {
@@ -133,6 +135,44 @@ public class TripServiceImplTest {
         Mockito.when(driverService.getDriver(anyString())).thenReturn(null);
 
         Assertions.assertThrows(UserNotFoundException.class, () -> tripService.getRequestedTrips(tripRequestDto));
+    }
+
+    @Test
+    void testChangeTripState() {
+        TripStateDto tripStateDto = new TripStateDto();
+        tripStateDto.setId(1L);
+        tripStateDto.setUsername("mohsen");
+        tripStateDto.setTripState(TripStateEnum.REQUEST);
+
+        Mockito.when(tripRepository.findById(anyLong())).thenReturn(Optional.of(tripEntity));
+        Mockito.when(driverService.getDriver(anyString())).thenReturn(driverDto);
+        Mockito.when(tripRepository.findByDriverEntityAndTripState(any(), any())).thenReturn(null);
+        Mockito.when(tripRepository.save(any())).thenReturn(null);
+
+        Assertions.assertDoesNotThrow(() -> tripService.changeTripState(tripStateDto));
+    }
+
+    @Test
+    void testChangeTripState_TripNotFound() {
+        TripStateDto tripStateDto = new TripStateDto();
+        tripStateDto.setId(1L);
+        tripStateDto.setUsername("mohsen");
+        tripStateDto.setTripState(TripStateEnum.REQUEST);
+
+        Mockito.when(tripRepository.findById(anyLong())).thenReturn(Optional.empty());
+        Assertions.assertThrows(TripNotFoundException.class, () -> tripService.changeTripState(tripStateDto));
+    }
+
+    @Test
+    void testChangeTripState_TripIsNotChangeable() {
+        TripStateDto tripStateDto = new TripStateDto();
+        tripStateDto.setId(1L);
+        tripStateDto.setUsername("mohsen");
+        tripStateDto.setTripState(TripStateEnum.REQUEST);
+        tripEntity.setTripState(TripStateEnum.FINISHED);
+
+        Mockito.when(tripRepository.findById(anyLong())).thenReturn(Optional.of(tripEntity));
+        Assertions.assertThrows(TripIsNotChangeableException.class, () -> tripService.changeTripState(tripStateDto));
     }
 
 }
