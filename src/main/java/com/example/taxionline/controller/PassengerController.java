@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,16 +34,21 @@ public class PassengerController {
         return new ResponseEntity<>(modelMapper.map(passengerResult, PassengerRegisterRs.class), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<PassengerRegisterRs> getPassenger(@PathVariable String username){
+    @PreAuthorize("hasRole('ROLE_PASSENGER')")
+    @GetMapping("/infos")
+    public ResponseEntity<PassengerRegisterRs> getPassenger(){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
         PassengerDto passengerResult = passengerService.getPassenger(username);
 
         return new ResponseEntity<>(modelMapper.map(passengerResult, PassengerRegisterRs.class), HttpStatus.OK);
     }
 
-    @PostMapping("/{username}/trips")
-    public ResponseEntity<TripRequestRs> requestTrip(@PathVariable String username,
-                                                     @RequestBody TripRequestRq tripRequestRq){
+    @PreAuthorize("hasRole('ROLE_PASSENGER')")
+    @PostMapping("/trips")
+    public ResponseEntity<TripRequestRs> requestTrip(@RequestBody TripRequestRq tripRequestRq){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
         TripRequestDto tripRequestDto = new TripRequestDto();
         tripRequestDto.setUsername(username);
         tripRequestDto.setX(tripRequestRq.getX());

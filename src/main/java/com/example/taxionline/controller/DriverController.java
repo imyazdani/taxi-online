@@ -16,6 +16,8 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,16 +38,20 @@ public class DriverController {
         return new ResponseEntity<>(modelMapper.map(driverResult, DriverRegisterRs.class), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<DriverRegisterRs> getDriver(@PathVariable String username) {
+    @PreAuthorize("hasRole('ROLE_DRIVER')")
+    @GetMapping("/infos")
+    public ResponseEntity<DriverRegisterRs> getDriver() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         DriverDto driverResult = driverService.getDriver(username);
 
         return new ResponseEntity<>(modelMapper.map(driverResult, DriverRegisterRs.class), HttpStatus.OK);
     }
 
-    @PostMapping("/{username}/trips")
-    public ResponseEntity<List<TripRequestAvailableRs>> getRequestedTrips(@PathVariable String username,
-                                                                          @RequestBody TripRequestRq tripRequestRq) {
+    @PreAuthorize("hasRole('ROLE_DRIVER')")
+    @PostMapping("/trips")
+    public ResponseEntity<List<TripRequestAvailableRs>> getRequestedTrips(@RequestBody TripRequestRq tripRequestRq) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
         TripRequestDto tripRequestDto = new TripRequestDto();
         tripRequestDto.setUsername(username);
         tripRequestDto.setX(tripRequestRq.getX());
@@ -58,10 +64,11 @@ public class DriverController {
         return new ResponseEntity<>(tripList, HttpStatus.OK);
     }
 
-    @PostMapping("/{username}/trips/{id}")
-    public ResponseEntity<Void> changeTripState(@PathVariable String username,
-                                                  @PathVariable Long id,
+    @PreAuthorize("hasRole('ROLE_DRIVER')")
+    @PostMapping("/trips/{id}")
+    public ResponseEntity<Void> changeTripState(@PathVariable Long id,
                                                   @RequestBody TripStateRq tripStateRq) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         TripStateDto tripStateDto = new TripStateDto();
         tripStateDto.setId(id);
         tripStateDto.setUsername(username);
