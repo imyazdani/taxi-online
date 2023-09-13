@@ -9,6 +9,7 @@ import com.example.taxionline.repository.PassengerRepository;
 import com.example.taxionline.service.PassengerService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,8 @@ public class PassengerServiceImpl implements PassengerService {
 
     private final ModelMapper modelMapper;
     private final PassengerRepository passengerRepository;
+    private final PasswordEncoder passwordEncoder;
+
 
     @Transactional
     @Override
@@ -28,6 +31,7 @@ public class PassengerServiceImpl implements PassengerService {
         });
 
         passengerEntity.setRole(UserRoleEnum.PASSENGER);
+        passengerEntity.setPassword(passwordEncoder.encode(customerDto.getPassword()));
 
         PassengerEntity passengerStored = passengerRepository.save(passengerEntity);
         return modelMapper.map(passengerStored, PassengerDto.class);

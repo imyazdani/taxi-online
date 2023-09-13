@@ -9,6 +9,7 @@ import com.example.taxionline.repository.DriverRepository;
 import com.example.taxionline.service.DriverService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ public class DriverServiceImpl implements DriverService {
 
     private final ModelMapper modelMapper;
     private final DriverRepository driverRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     @Override
@@ -28,6 +30,7 @@ public class DriverServiceImpl implements DriverService {
         });
 
         driverEntity.setRole(UserRoleEnum.DRIVER);
+        driverEntity.setPassword(passwordEncoder.encode(driverDto.getPassword()));
 
         DriverEntity driverStored = driverRepository.save(driverEntity);
         return modelMapper.map(driverStored, DriverDto.class);
