@@ -1,6 +1,7 @@
 package com.example.taxionline.service.impl;
 
 import com.example.taxionline.exception.UserDuplicateException;
+import com.example.taxionline.exception.UserNotFoundException;
 import com.example.taxionline.model.dto.DriverDto;
 import com.example.taxionline.model.dto.UserDto;
 import com.example.taxionline.model.entity.DriverEntity;
@@ -73,5 +74,29 @@ public class DriverServiceImplTest {
     void testRegister_DuplicateFound() {
         Mockito.when(driverRepository.findByUsername(anyString())).thenReturn(Optional.of(driverEntity));
         Assertions.assertThrows(UserDuplicateException.class, () -> driverService.register(driverDto));
+    }
+
+    @Test
+    void testGetDriver() {
+        String username = "mohsen";
+        Mockito.when(driverRepository.findByUsername(anyString())).thenReturn(Optional.of(driverEntity));
+
+        DriverDto driverDto = driverService.getDriver(username);
+
+        Assertions.assertNotNull(driverDto);
+        Assertions.assertEquals(driverEntity.getId(), driverDto.getId());
+        Assertions.assertEquals(driverEntity.getName(), driverDto.getName());
+        Assertions.assertEquals(driverEntity.getUsername(), driverDto.getUsername());
+        Assertions.assertEquals(driverEntity.getPassword(), driverDto.getPassword());
+        Assertions.assertEquals(driverEntity.getRole(), driverDto.getRole());
+        Assertions.assertEquals(driverEntity.getCar(), driverDto.getCar());
+    }
+
+    @Test
+    void testGetDriver_UserNotFound() {
+        String username = "mohsen";
+        Mockito.when(driverRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(UserNotFoundException.class, () -> driverService.getDriver(username));
     }
 }
