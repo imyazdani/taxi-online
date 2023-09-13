@@ -30,3 +30,4 @@ docker compose -d up
 - Spring Security
 - MySQL
 - Maven
+- Docker and Docker Compose
