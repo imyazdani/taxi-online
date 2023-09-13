@@ -109,7 +109,7 @@ public class TripServiceImpl implements TripService {
                 tripStateDto.getTripState());
     }
 
-    private List<TripDto> listTripsByRequest(GpsLocationDto gpsLocationDto){
+    public List<TripDto> listTripsByRequest(GpsLocationDto gpsLocationDto){
         List<TripEntity> tripEntityList = tripRepository.findByTripState(TripStateEnum.REQUEST);
 
         List<TripEntity> collectedTrip = tripEntityList.parallelStream()

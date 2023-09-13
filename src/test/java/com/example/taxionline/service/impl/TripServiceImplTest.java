@@ -203,4 +203,32 @@ public class TripServiceImplTest {
         Assertions.assertThrows(DriverException.class, () -> tripService.changeTripState(tripStateDto));
     }
 
+    @Test
+    void listTripsByRequest() {
+        GpsLocationDto gpsLocationDto = new GpsLocationDto();
+        gpsLocationDto.setId(1L);
+        gpsLocationDto.setX(45L);
+        gpsLocationDto.setY(45L);
+
+        Mockito.when(tripRepository.findByTripState(any())).thenReturn(List.of(tripEntity));
+
+        List<TripDto> tripDtoList = tripService.listTripsByRequest(gpsLocationDto);
+        Assertions.assertNotNull(tripDtoList);
+        Assertions.assertEquals(tripDtoList.size(), 1L);
+    }
+
+    @Test
+    void listTripsByRequest_NotInDistance() {
+        GpsLocationDto gpsLocationDto = new GpsLocationDto();
+        gpsLocationDto.setId(1L);
+        gpsLocationDto.setX(30L);
+        gpsLocationDto.setY(30L);
+
+        Mockito.when(tripRepository.findByTripState(any())).thenReturn(List.of(tripEntity));
+
+        List<TripDto> tripDtoList = tripService.listTripsByRequest(gpsLocationDto);
+        Assertions.assertNotNull(tripDtoList);
+        Assertions.assertEquals(tripDtoList.size(), 0L);
+    }
+
 }
