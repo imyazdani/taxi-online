@@ -62,10 +62,10 @@ public class PassengerServiceImplTest {
         PassengerDto passengerDtoResult = passengerService.register(passengerDto);
 
         Assertions.assertNotNull(passengerDtoResult);
-        Assertions.assertEquals(passengerDtoResult.getId(), passengerDtoResult.getId());
-        Assertions.assertEquals(passengerDtoResult.getName(), passengerDtoResult.getName());
-        Assertions.assertEquals(passengerDtoResult.getUsername(), passengerDtoResult.getUsername());
-        Assertions.assertEquals(passengerDtoResult.getRole(), passengerDtoResult.getRole());
+        Assertions.assertEquals(passengerDto.getId(), passengerDtoResult.getId());
+        Assertions.assertEquals(passengerDto.getName(), passengerDtoResult.getName());
+        Assertions.assertEquals(passengerDto.getUsername(), passengerDtoResult.getUsername());
+        Assertions.assertEquals(passengerDto.getRole(), passengerDtoResult.getRole());
     }
 
     @Test
