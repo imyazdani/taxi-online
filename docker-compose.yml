@@ -5,7 +5,7 @@ services:
     depends_on:
       - mysqldb
     build:
-      context: app
+      context: ./
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
@@ -24,8 +24,8 @@ services:
       - taxionline-net
     environment:
       MYSQL_DATABASE: taxi_online
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - db_data:/var/lib/mysql
