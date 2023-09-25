@@ -21,7 +21,7 @@ mvn clean package -DskipTests
 
 To run project
 ```sh
-docker compose -d up
+docker compose up -d
 ```
 
 # Requirements
